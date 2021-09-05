@@ -9,6 +9,7 @@ SELECT distinct [FarmCode]
       ,CASE WHEN ([Cur_Date] != '0') THEN (convert(date, [Cur_Date], 103)) END as [Cur_Date]
       ,[DIM]
       ,[CowID]
+	  ,[FarmCowID]
 	  ,CASE WHEN ([BirthDate] <> '0') THEN (convert(date, [BirthDate], 103)) END as [BirthDate]
       ,CASE WHEN ([CalvingDate] <> '0') THEN (convert(date, [CalvingDate], 103)) END as [CalvingDate]
       ,CASE WHEN ([CurrentConceivedDate] <> '0') THEN (convert(date, [CurrentConceivedDate], 103)) END as [CurrentConceivedDate]
@@ -80,7 +81,7 @@ SELECT distinct [FarmCode]
       ,[CS_CalvingMonth]
       --,[DRCS] /*Data isn't consist*/
       ,[Age]
-      --,[DRAI] /*Data isn't consist*/
+	  --,[DRAI] /*Data isn't consist*/
       --,[DRDR] /*Data isn't consist*/
       ,[Twin]
       ,[Still]
@@ -120,6 +121,7 @@ select	FarmCode
 		,DateMonth
 		,DIM
 		,CowID
+		,FarmCowID
 		,BirthDate
 		,CalvingDate
 		,Cur_Date
@@ -147,262 +149,264 @@ select	FarmCode
 		,CurrentLAME
 		,Parity123
 		,Age
+		,DATEDIFF(MONTH, BirthDate, CalvingDate) as Age_calc
 		,Twin
 		,Still
 		,PrevDryDays
 		,Term
 		,PPUD
 		,Group_ID
-		,LEAD(Group_ID, 1) OVER(partition by CowID order by Cur_Date) as Group_ID_t1
-		,LEAD(Group_ID, 2) OVER(partition by CowID order by Cur_Date) as Group_ID_t2
-		,LEAD(Group_ID, 3) OVER(partition by CowID order by Cur_Date) as Group_ID_t3
-		,LEAD(Group_ID, 4) OVER(partition by CowID order by Cur_Date) as Group_ID_t4
-		,LEAD(Group_ID, 5) OVER(partition by CowID order by Cur_Date) as Group_ID_t5
-		,LEAD(Group_ID, 6) OVER(partition by CowID order by Cur_Date) as Group_ID_t6
-		,LEAD(Group_ID, 7) OVER(partition by CowID order by Cur_Date) as Group_ID_t7
+		,LEAD(Group_ID, 1) OVER(partition by FarmCowID order by Cur_Date) as Group_ID_t1
+		,LEAD(Group_ID, 2) OVER(partition by FarmCowID order by Cur_Date) as Group_ID_t2
+		,LEAD(Group_ID, 3) OVER(partition by FarmCowID order by Cur_Date) as Group_ID_t3
+		,LEAD(Group_ID, 4) OVER(partition by FarmCowID order by Cur_Date) as Group_ID_t4
+		,LEAD(Group_ID, 5) OVER(partition by FarmCowID order by Cur_Date) as Group_ID_t5
+		,LEAD(Group_ID, 6) OVER(partition by FarmCowID order by Cur_Date) as Group_ID_t6
+		,LEAD(Group_ID, 7) OVER(partition by FarmCowID order by Cur_Date) as Group_ID_t7
 		,Is_Milked
-		,LEAD(Is_Milked, 1) OVER(partition by CowID order by Cur_Date) as Is_Milked_t1
-		,LEAD(Is_Milked, 2) OVER(partition by CowID order by Cur_Date) as Is_Milked_t2
-		,LEAD(Is_Milked, 3) OVER(partition by CowID order by Cur_Date) as Is_Milked_t3
-		,LEAD(Is_Milked, 4) OVER(partition by CowID order by Cur_Date) as Is_Milked_t4
-		,LEAD(Is_Milked, 5) OVER(partition by CowID order by Cur_Date) as Is_Milked_t5
-		,LEAD(Is_Milked, 6) OVER(partition by CowID order by Cur_Date) as Is_Milked_t6
-		,LEAD(Is_Milked, 7) OVER(partition by CowID order by Cur_Date) as Is_Milked_t7
+		,LEAD(Is_Milked, 1) OVER(partition by FarmCowID order by Cur_Date) as Is_Milked_t1
+		,LEAD(Is_Milked, 2) OVER(partition by FarmCowID order by Cur_Date) as Is_Milked_t2
+		,LEAD(Is_Milked, 3) OVER(partition by FarmCowID order by Cur_Date) as Is_Milked_t3
+		,LEAD(Is_Milked, 4) OVER(partition by FarmCowID order by Cur_Date) as Is_Milked_t4
+		,LEAD(Is_Milked, 5) OVER(partition by FarmCowID order by Cur_Date) as Is_Milked_t5
+		,LEAD(Is_Milked, 6) OVER(partition by FarmCowID order by Cur_Date) as Is_Milked_t6
+		,LEAD(Is_Milked, 7) OVER(partition by FarmCowID order by Cur_Date) as Is_Milked_t7
 		, DailyYield_KG 
-		, LEAD(DailyYield_KG, 1) OVER(partition by	CowID order by Cur_Date) as DailyYield_KG_t1
-		, LEAD(DailyYield_KG, 2) OVER(partition by	CowID order by Cur_Date) as DailyYield_KG_t2
-		, LEAD(DailyYield_KG, 3) OVER(partition by	CowID order by Cur_Date) as DailyYield_KG_t3
-		, LEAD(DailyYield_KG, 4) OVER(partition by	CowID order by Cur_Date) as DailyYield_KG_t4
-		, LEAD(DailyYield_KG, 5) OVER(partition by	CowID order by Cur_Date) as DailyYield_KG_t5
-		, LEAD(DailyYield_KG, 6) OVER(partition by	CowID order by Cur_Date) as DailyYield_KG_t6
-		, LEAD(DailyYield_KG, 7) OVER(partition by	CowID order by Cur_Date) as DailyYield_KG_t7
-		, TenDaysAvgYield 
-		, LEAD(TenDaysAvgYield, 1) OVER(partition by CowID order by Cur_Date) as TenDaysAvgYield_t1
-		, LEAD(TenDaysAvgYield, 2) OVER(partition by CowID order by Cur_Date) as TenDaysAvgYield_t2
-		, LEAD(TenDaysAvgYield, 3) OVER(partition by CowID order by Cur_Date) as TenDaysAvgYield_t3
-		, LEAD(TenDaysAvgYield, 4) OVER(partition by CowID order by Cur_Date) as TenDaysAvgYield_t4
-		, LEAD(TenDaysAvgYield, 5) OVER(partition by CowID order by Cur_Date) as TenDaysAvgYield_t5
-		, LEAD(TenDaysAvgYield, 6) OVER(partition by CowID order by Cur_Date) as TenDaysAvgYield_t6
-		, LEAD(TenDaysAvgYield, 7) OVER(partition by CowID order by Cur_Date) as TenDaysAvgYield_t7
-		, AccumulateYieldFromDay4 
-		, LEAD(AccumulateYieldFromDay4, 1) OVER(partition by CowID order by Cur_Date) as AccumulateYieldFromDay4_t1
-		, LEAD(AccumulateYieldFromDay4, 2) OVER(partition by CowID order by Cur_Date) as AccumulateYieldFromDay4_t2
-		, LEAD(AccumulateYieldFromDay4, 3) OVER(partition by CowID order by Cur_Date) as AccumulateYieldFromDay4_t3
-		, LEAD(AccumulateYieldFromDay4, 4) OVER(partition by CowID order by Cur_Date) as AccumulateYieldFromDay4_t4
-		, LEAD(AccumulateYieldFromDay4, 5) OVER(partition by CowID order by Cur_Date) as AccumulateYieldFromDay4_t5
-		, LEAD(AccumulateYieldFromDay4, 6) OVER(partition by CowID order by Cur_Date) as AccumulateYieldFromDay4_t6
-		, LEAD(AccumulateYieldFromDay4, 7) OVER(partition by CowID order by Cur_Date) as AccumulateYieldFromDay4_t7
-		, DailyFat_P 
-		, LEAD(DailyFat_P, 1) OVER(partition by	CowID order by Cur_Date) as DailyFat_P_t1
-		, LEAD(DailyFat_P, 2) OVER(partition by	CowID order by Cur_Date) as DailyFat_P_t2
-		, LEAD(DailyFat_P, 3) OVER(partition by	CowID order by Cur_Date) as DailyFat_P_t3
-		, LEAD(DailyFat_P, 4) OVER(partition by	CowID order by Cur_Date) as DailyFat_P_t4
-		, LEAD(DailyFat_P, 5) OVER(partition by	CowID order by Cur_Date) as DailyFat_P_t5
-		, LEAD(DailyFat_P, 6) OVER(partition by	CowID order by Cur_Date) as DailyFat_P_t6
-		, LEAD(DailyFat_P, 7) OVER(partition by	CowID order by Cur_Date) as DailyFat_P_t7
-		, TenDaysAvgFat_P 
-		, LEAD(TenDaysAvgFat_P, 1) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_P_t1
-		, LEAD(TenDaysAvgFat_P, 2) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_P_t2
-		, LEAD(TenDaysAvgFat_P, 3) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_P_t3
-		, LEAD(TenDaysAvgFat_P, 4) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_P_t4
-		, LEAD(TenDaysAvgFat_P, 5) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_P_t5
-		, LEAD(TenDaysAvgFat_P, 6) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_P_t6
-		, LEAD(TenDaysAvgFat_P, 7) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_P_t7
-		, DailyFat_KG 
-		, LEAD(DailyFat_KG, 1) OVER(partition by	CowID order by Cur_Date) as DailyFat_KG_t1
-		, LEAD(DailyFat_KG, 2) OVER(partition by	CowID order by Cur_Date) as DailyFat_KG_t2
-		, LEAD(DailyFat_KG, 3) OVER(partition by	CowID order by Cur_Date) as DailyFat_KG_t3
-		, LEAD(DailyFat_KG, 4) OVER(partition by	CowID order by Cur_Date) as DailyFat_KG_t4
-		, LEAD(DailyFat_KG, 5) OVER(partition by	CowID order by Cur_Date) as DailyFat_KG_t5
-		, LEAD(DailyFat_KG, 6) OVER(partition by	CowID order by Cur_Date) as DailyFat_KG_t6
-		, LEAD(DailyFat_KG, 7) OVER(partition by	CowID order by Cur_Date) as DailyFat_KG_t7
-		, TenDaysAvgFat_KG 
-		, LEAD(TenDaysAvgFat_KG, 1) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_KG_t1
-		, LEAD(TenDaysAvgFat_KG, 2) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_KG_t2
-		, LEAD(TenDaysAvgFat_KG, 3) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_KG_t3
-		, LEAD(TenDaysAvgFat_KG, 4) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_KG_t4
-		, LEAD(TenDaysAvgFat_KG, 5) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_KG_t5
-		, LEAD(TenDaysAvgFat_KG, 6) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_KG_t6
-		, LEAD(TenDaysAvgFat_KG, 7) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFat_KG_t7
-		, AccumulateFatFromDay4_KG 
-		, LEAD(AccumulateFatFromDay4_KG, 1) OVER(partition by	CowID order by Cur_Date) as AccumulateFatFromDay4_KG_t1
-		, LEAD(AccumulateFatFromDay4_KG, 2) OVER(partition by	CowID order by Cur_Date) as AccumulateFatFromDay4_KG_t2
-		, LEAD(AccumulateFatFromDay4_KG, 3) OVER(partition by	CowID order by Cur_Date) as AccumulateFatFromDay4_KG_t3
-		, LEAD(AccumulateFatFromDay4_KG, 4) OVER(partition by	CowID order by Cur_Date) as AccumulateFatFromDay4_KG_t4
-		, LEAD(AccumulateFatFromDay4_KG, 5) OVER(partition by	CowID order by Cur_Date) as AccumulateFatFromDay4_KG_t5
-		, LEAD(AccumulateFatFromDay4_KG, 6) OVER(partition by	CowID order by Cur_Date) as AccumulateFatFromDay4_KG_t6
-		, LEAD(AccumulateFatFromDay4_KG, 7) OVER(partition by	CowID order by Cur_Date) as AccumulateFatFromDay4_KG_t7
-		, DailyProtein_P 
-		, LEAD(DailyProtein_P, 1) OVER(partition by	CowID order by Cur_Date) as DailyProtein_P_t1
-		, LEAD(DailyProtein_P, 2) OVER(partition by	CowID order by Cur_Date) as DailyProtein_P_t2
-		, LEAD(DailyProtein_P, 3) OVER(partition by	CowID order by Cur_Date) as DailyProtein_P_t3
-		, LEAD(DailyProtein_P, 4) OVER(partition by	CowID order by Cur_Date) as DailyProtein_P_t4
-		, LEAD(DailyProtein_P, 5) OVER(partition by	CowID order by Cur_Date) as DailyProtein_P_t5
-		, LEAD(DailyProtein_P, 6) OVER(partition by	CowID order by Cur_Date) as DailyProtein_P_t6
-		, LEAD(DailyProtein_P, 7) OVER(partition by	CowID order by Cur_Date) as DailyProtein_P_t7
-		, TenDaysAvgProtein_p 
-		, LEAD(TenDaysAvgProtein_p, 1) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_p_t1
-		, LEAD(TenDaysAvgProtein_p, 2) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_p_t2
-		, LEAD(TenDaysAvgProtein_p, 3) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_p_t3
-		, LEAD(TenDaysAvgProtein_p, 4) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_p_t4
-		, LEAD(TenDaysAvgProtein_p, 5) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_p_t5
-		, LEAD(TenDaysAvgProtein_p, 6) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_p_t6
-		, LEAD(TenDaysAvgProtein_p, 7) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_p_t7
+		, LEAD(DailyYield_KG, 1) OVER(partition by	FarmCowID order by Cur_Date) - DailyYield_KG as DailyYield_KG_t1
+		, LEAD(DailyYield_KG, 2) OVER(partition by	FarmCowID order by Cur_Date) - LEAD(DailyYield_KG, 1) OVER(partition by	FarmCowID order by Cur_Date) as DailyYield_KG_t2
+		, LEAD(DailyYield_KG, 3) OVER(partition by	FarmCowID order by Cur_Date) - LEAD(DailyYield_KG, 2) OVER(partition by	FarmCowID order by Cur_Date) as DailyYield_KG_t3
+		, LEAD(DailyYield_KG, 4) OVER(partition by	FarmCowID order by Cur_Date) - LEAD(DailyYield_KG, 3) OVER(partition by	FarmCowID order by Cur_Date) as DailyYield_KG_t4
+		, LEAD(DailyYield_KG, 5) OVER(partition by	FarmCowID order by Cur_Date) - LEAD(DailyYield_KG, 4) OVER(partition by	FarmCowID order by Cur_Date) as DailyYield_KG_t5
+		, LEAD(DailyYield_KG, 6) OVER(partition by	FarmCowID order by Cur_Date) - LEAD(DailyYield_KG, 5) OVER(partition by	FarmCowID order by Cur_Date) as DailyYield_KG_t6
+		, LEAD(DailyYield_KG, 7) OVER(partition by	FarmCowID order by Cur_Date) - LEAD(DailyYield_KG, 6) OVER(partition by	FarmCowID order by Cur_Date) as DailyYield_KG_t7
+		, TenDaysAvgYield
+		, LEAD(TenDaysAvgYield, 1) OVER(partition by FarmCowID order by Cur_Date) - TenDaysAvgYield as TenDaysAvgYield_t1
+		, LEAD(TenDaysAvgYield, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgYield, 1) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgYield_t2
+		, LEAD(TenDaysAvgYield, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgYield, 2) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgYield_t3
+		, LEAD(TenDaysAvgYield, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgYield, 3) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgYield_t4
+		, LEAD(TenDaysAvgYield, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgYield, 4) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgYield_t5
+		, LEAD(TenDaysAvgYield, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgYield, 5) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgYield_t6
+		, LEAD(TenDaysAvgYield, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgYield, 6) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgYield_t7
+		, AccumulateYieldFromDay4
+		, LEAD(AccumulateYieldFromDay4, 1) OVER(partition by FarmCowID order by Cur_Date) - AccumulateYieldFromDay4 as AccumulateYieldFromDay4_t1
+		, LEAD(AccumulateYieldFromDay4, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateYieldFromDay4, 1) OVER(partition by FarmCowID order by Cur_Date) as AccumulateYieldFromDay4_t2
+		, LEAD(AccumulateYieldFromDay4, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateYieldFromDay4, 2) OVER(partition by FarmCowID order by Cur_Date) as AccumulateYieldFromDay4_t3
+		, LEAD(AccumulateYieldFromDay4, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateYieldFromDay4, 3) OVER(partition by FarmCowID order by Cur_Date) as AccumulateYieldFromDay4_t4
+		, LEAD(AccumulateYieldFromDay4, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateYieldFromDay4, 4) OVER(partition by FarmCowID order by Cur_Date) as AccumulateYieldFromDay4_t5
+		, LEAD(AccumulateYieldFromDay4, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateYieldFromDay4, 5) OVER(partition by FarmCowID order by Cur_Date) as AccumulateYieldFromDay4_t6
+		, LEAD(AccumulateYieldFromDay4, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateYieldFromDay4, 6) OVER(partition by FarmCowID order by Cur_Date) as AccumulateYieldFromDay4_t7
+		, DailyFat_P
+		, LEAD(DailyFat_P, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyFat_P as DailyFat_P_t1
+		, LEAD(DailyFat_P, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_P, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_P_t2
+		, LEAD(DailyFat_P, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_P, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_P_t3
+		, LEAD(DailyFat_P, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_P, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_P_t4
+		, LEAD(DailyFat_P, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_P, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_P_t5
+		, LEAD(DailyFat_P, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_P, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_P_t6
+		, LEAD(DailyFat_P, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_P, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_P_t7
+		, TenDaysAvgFat_P
+		, LEAD(TenDaysAvgFat_P, 1) OVER(partition by FarmCowID order by Cur_Date) - TenDaysAvgFat_P as TenDaysAvgFat_P_t1
+		, LEAD(TenDaysAvgFat_P, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_P, 1) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_P_t2
+		, LEAD(TenDaysAvgFat_P, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_P, 2) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_P_t3
+		, LEAD(TenDaysAvgFat_P, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_P, 3) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_P_t4
+		, LEAD(TenDaysAvgFat_P, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_P, 4) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_P_t5
+		, LEAD(TenDaysAvgFat_P, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_P, 5) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_P_t6
+		, LEAD(TenDaysAvgFat_P, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_P, 6) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_P_t7
+		, DailyFat_KG
+		, LEAD(DailyFat_KG, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyFat_KG as DailyFat_KG_t1
+		, LEAD(DailyFat_KG, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_KG, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_KG_t2
+		, LEAD(DailyFat_KG, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_KG, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_KG_t3
+		, LEAD(DailyFat_KG, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_KG, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_KG_t4
+		, LEAD(DailyFat_KG, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_KG, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_KG_t5
+		, LEAD(DailyFat_KG, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_KG, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_KG_t6
+		, LEAD(DailyFat_KG, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFat_KG, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyFat_KG_t7
+		, TenDaysAvgFat_KG
+		, LEAD(TenDaysAvgFat_KG, 1) OVER(partition by FarmCowID order by Cur_Date) - TenDaysAvgFat_KG as TenDaysAvgFat_KG_t1
+		, LEAD(TenDaysAvgFat_KG, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_KG, 1) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_KG_t2
+		, LEAD(TenDaysAvgFat_KG, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_KG, 2) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_KG_t3
+		, LEAD(TenDaysAvgFat_KG, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_KG, 3) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_KG_t4
+		, LEAD(TenDaysAvgFat_KG, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_KG, 4) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_KG_t5
+		, LEAD(TenDaysAvgFat_KG, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_KG, 5) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_KG_t6
+		, LEAD(TenDaysAvgFat_KG, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFat_KG, 6) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFat_KG_t7
+		, AccumulateFatFromDay4_KG
+		, LEAD(AccumulateFatFromDay4_KG, 1) OVER(partition by FarmCowID order by Cur_Date) - AccumulateFatFromDay4_KG as AccumulateFatFromDay4_KG_t1
+		, LEAD(AccumulateFatFromDay4_KG, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateFatFromDay4_KG, 1) OVER(partition by FarmCowID order by Cur_Date) as AccumulateFatFromDay4_KG_t2
+		, LEAD(AccumulateFatFromDay4_KG, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateFatFromDay4_KG, 2) OVER(partition by FarmCowID order by Cur_Date) as AccumulateFatFromDay4_KG_t3
+		, LEAD(AccumulateFatFromDay4_KG, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateFatFromDay4_KG, 3) OVER(partition by FarmCowID order by Cur_Date) as AccumulateFatFromDay4_KG_t4
+		, LEAD(AccumulateFatFromDay4_KG, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateFatFromDay4_KG, 4) OVER(partition by FarmCowID order by Cur_Date) as AccumulateFatFromDay4_KG_t5
+		, LEAD(AccumulateFatFromDay4_KG, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateFatFromDay4_KG, 5) OVER(partition by FarmCowID order by Cur_Date) as AccumulateFatFromDay4_KG_t6
+		, LEAD(AccumulateFatFromDay4_KG, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateFatFromDay4_KG, 6) OVER(partition by FarmCowID order by Cur_Date) as AccumulateFatFromDay4_KG_t7
+		, DailyProtein_P
+		, LEAD(DailyProtein_P, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyProtein_P as DailyProtein_P_t1
+		, LEAD(DailyProtein_P, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_P, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_P_t2
+		, LEAD(DailyProtein_P, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_P, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_P_t3
+		, LEAD(DailyProtein_P, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_P, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_P_t4
+		, LEAD(DailyProtein_P, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_P, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_P_t5
+		, LEAD(DailyProtein_P, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_P, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_P_t6
+		, LEAD(DailyProtein_P, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_P, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_P_t7
+		, TenDaysAvgProtein_p
+		, LEAD(TenDaysAvgProtein_p, 1) OVER(partition by FarmCowID order by Cur_Date) - TenDaysAvgProtein_p as TenDaysAvgProtein_p_t1
+		, LEAD(TenDaysAvgProtein_p, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_p, 1) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_p_t2
+		, LEAD(TenDaysAvgProtein_p, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_p, 2) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_p_t3
+		, LEAD(TenDaysAvgProtein_p, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_p, 3) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_p_t4
+		, LEAD(TenDaysAvgProtein_p, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_p, 4) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_p_t5
+		, LEAD(TenDaysAvgProtein_p, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_p, 5) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_p_t6
+		, LEAD(TenDaysAvgProtein_p, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_p, 6) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_p_t7
 		, DailyProtein_KG
-		, LEAD(DailyProtein_KG, 1) OVER(partition by	CowID order by Cur_Date) as DailyProtein_KG_t1
-		, LEAD(DailyProtein_KG, 2) OVER(partition by	CowID order by Cur_Date) as DailyProtein_KG_t2
-		, LEAD(DailyProtein_KG, 3) OVER(partition by	CowID order by Cur_Date) as DailyProtein_KG_t3
-		, LEAD(DailyProtein_KG, 4) OVER(partition by	CowID order by Cur_Date) as DailyProtein_KG_t4
-		, LEAD(DailyProtein_KG, 5) OVER(partition by	CowID order by Cur_Date) as DailyProtein_KG_t5
-		, LEAD(DailyProtein_KG, 6) OVER(partition by	CowID order by Cur_Date) as DailyProtein_KG_t6
-		, LEAD(DailyProtein_KG, 7) OVER(partition by	CowID order by Cur_Date) as DailyProtein_KG_t7
+		, LEAD(DailyProtein_KG, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyProtein_KG as DailyProtein_KG_t1
+		, LEAD(DailyProtein_KG, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_KG, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_KG_t2
+		, LEAD(DailyProtein_KG, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_KG, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_KG_t3
+		, LEAD(DailyProtein_KG, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_KG, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_KG_t4
+		, LEAD(DailyProtein_KG, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_KG, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_KG_t5
+		, LEAD(DailyProtein_KG, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_KG, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_KG_t6
+		, LEAD(DailyProtein_KG, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProtein_KG, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyProtein_KG_t7
 		, TenDaysAvgProtein_KG
-		, LEAD(TenDaysAvgProtein_KG, 1) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_KG_t1
-		, LEAD(TenDaysAvgProtein_KG, 2) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_KG_t2
-		, LEAD(TenDaysAvgProtein_KG, 3) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_KG_t3
-		, LEAD(TenDaysAvgProtein_KG, 4) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_KG_t4
-		, LEAD(TenDaysAvgProtein_KG, 5) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_KG_t5
-		, LEAD(TenDaysAvgProtein_KG, 6) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_KG_t6
-		, LEAD(TenDaysAvgProtein_KG, 7) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgProtein_KG_t7
+		, LEAD(TenDaysAvgProtein_KG, 1) OVER(partition by FarmCowID order by Cur_Date) - TenDaysAvgProtein_KG as TenDaysAvgProtein_KG_t1
+		, LEAD(TenDaysAvgProtein_KG, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_KG, 1) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_KG_t2
+		, LEAD(TenDaysAvgProtein_KG, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_KG, 2) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_KG_t3
+		, LEAD(TenDaysAvgProtein_KG, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_KG, 3) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_KG_t4
+		, LEAD(TenDaysAvgProtein_KG, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_KG, 4) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_KG_t5
+		, LEAD(TenDaysAvgProtein_KG, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_KG, 5) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_KG_t6
+		, LEAD(TenDaysAvgProtein_KG, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgProtein_KG, 6) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgProtein_KG_t7
 		, AccumulateProteinFromDay4_KG
-		, LEAD(AccumulateProteinFromDay4_KG, 1) OVER(partition by	CowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t1
-		, LEAD(AccumulateProteinFromDay4_KG, 2) OVER(partition by	CowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t2
-		, LEAD(AccumulateProteinFromDay4_KG, 3) OVER(partition by	CowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t3
-		, LEAD(AccumulateProteinFromDay4_KG, 4) OVER(partition by	CowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t4
-		, LEAD(AccumulateProteinFromDay4_KG, 5) OVER(partition by	CowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t5
-		, LEAD(AccumulateProteinFromDay4_KG, 6) OVER(partition by	CowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t6
-		, LEAD(AccumulateProteinFromDay4_KG, 7) OVER(partition by	CowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t7
+		, LEAD(AccumulateProteinFromDay4_KG, 1) OVER(partition by FarmCowID order by Cur_Date) - AccumulateProteinFromDay4_KG as AccumulateProteinFromDay4_KG_t1
+		, LEAD(AccumulateProteinFromDay4_KG, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateProteinFromDay4_KG, 1) OVER(partition by FarmCowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t2
+		, LEAD(AccumulateProteinFromDay4_KG, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateProteinFromDay4_KG, 2) OVER(partition by FarmCowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t3
+		, LEAD(AccumulateProteinFromDay4_KG, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateProteinFromDay4_KG, 3) OVER(partition by FarmCowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t4
+		, LEAD(AccumulateProteinFromDay4_KG, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateProteinFromDay4_KG, 4) OVER(partition by FarmCowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t5
+		, LEAD(AccumulateProteinFromDay4_KG, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateProteinFromDay4_KG, 5) OVER(partition by FarmCowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t6
+		, LEAD(AccumulateProteinFromDay4_KG, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateProteinFromDay4_KG, 6) OVER(partition by FarmCowID order by Cur_Date) as AccumulateProteinFromDay4_KG_t7
 		, ECM_KG
-		, LEAD(ECM_KG, 1) OVER(partition by	CowID order by Cur_Date) as ECM_KG_t1
-		, LEAD(ECM_KG, 2) OVER(partition by	CowID order by Cur_Date) as ECM_KG_t2
-		, LEAD(ECM_KG, 3) OVER(partition by	CowID order by Cur_Date) as ECM_KG_t3
-		, LEAD(ECM_KG, 4) OVER(partition by	CowID order by Cur_Date) as ECM_KG_t4
-		, LEAD(ECM_KG, 5) OVER(partition by	CowID order by Cur_Date) as ECM_KG_t5
-		, LEAD(ECM_KG, 6) OVER(partition by	CowID order by Cur_Date) as ECM_KG_t6
-		, LEAD(ECM_KG, 7) OVER(partition by	CowID order by Cur_Date) as ECM_KG_t7
+		, LEAD(ECM_KG, 1) OVER(partition by FarmCowID order by Cur_Date) - ECM_KG as ECM_KG_t1
+		, LEAD(ECM_KG, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(ECM_KG, 1) OVER(partition by FarmCowID order by Cur_Date) as ECM_KG_t2
+		, LEAD(ECM_KG, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(ECM_KG, 2) OVER(partition by FarmCowID order by Cur_Date) as ECM_KG_t3
+		, LEAD(ECM_KG, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(ECM_KG, 3) OVER(partition by FarmCowID order by Cur_Date) as ECM_KG_t4
+		, LEAD(ECM_KG, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(ECM_KG, 4) OVER(partition by FarmCowID order by Cur_Date) as ECM_KG_t5
+		, LEAD(ECM_KG, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(ECM_KG, 5) OVER(partition by FarmCowID order by Cur_Date) as ECM_KG_t6
+		, LEAD(ECM_KG, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(ECM_KG, 6) OVER(partition by FarmCowID order by Cur_Date) as ECM_KG_t7
 		, TenDaysAvgECM_KG
-		, LEAD(TenDaysAvgECM_KG, 1) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgECM_KG_t1
-		, LEAD(TenDaysAvgECM_KG, 2) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgECM_KG_t2
-		, LEAD(TenDaysAvgECM_KG, 3) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgECM_KG_t3
-		, LEAD(TenDaysAvgECM_KG, 4) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgECM_KG_t4
-		, LEAD(TenDaysAvgECM_KG, 5) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgECM_KG_t5
-		, LEAD(TenDaysAvgECM_KG, 6) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgECM_KG_t6
-		, LEAD(TenDaysAvgECM_KG, 7) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgECM_KG_t7
+		, LEAD(TenDaysAvgECM_KG, 1) OVER(partition by FarmCowID order by Cur_Date) - TenDaysAvgECM_KG as TenDaysAvgECM_KG_t1
+		, LEAD(TenDaysAvgECM_KG, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgECM_KG, 1) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgECM_KG_t2
+		, LEAD(TenDaysAvgECM_KG, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgECM_KG, 2) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgECM_KG_t3
+		, LEAD(TenDaysAvgECM_KG, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgECM_KG, 3) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgECM_KG_t4
+		, LEAD(TenDaysAvgECM_KG, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgECM_KG, 4) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgECM_KG_t5
+		, LEAD(TenDaysAvgECM_KG, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgECM_KG, 5) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgECM_KG_t6
+		, LEAD(TenDaysAvgECM_KG, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgECM_KG, 6) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgECM_KG_t7
 		, AccumulateECMFromDay4_KG
-		, LEAD(AccumulateECMFromDay4_KG, 1) OVER(partition by	CowID order by Cur_Date) as AccumulateECMFromDay4_KG_t1
-		, LEAD(AccumulateECMFromDay4_KG, 2) OVER(partition by	CowID order by Cur_Date) as AccumulateECMFromDay4_KG_t2
-		, LEAD(AccumulateECMFromDay4_KG, 3) OVER(partition by	CowID order by Cur_Date) as AccumulateECMFromDay4_KG_t3
-		, LEAD(AccumulateECMFromDay4_KG, 4) OVER(partition by	CowID order by Cur_Date) as AccumulateECMFromDay4_KG_t4
-		, LEAD(AccumulateECMFromDay4_KG, 5) OVER(partition by	CowID order by Cur_Date) as AccumulateECMFromDay4_KG_t5
-		, LEAD(AccumulateECMFromDay4_KG, 6) OVER(partition by	CowID order by Cur_Date) as AccumulateECMFromDay4_KG_t6
-		, LEAD(AccumulateECMFromDay4_KG, 7) OVER(partition by	CowID order by Cur_Date) as AccumulateECMFromDay4_KG_t7
+		, LEAD(AccumulateECMFromDay4_KG, 1) OVER(partition by FarmCowID order by Cur_Date) - AccumulateECMFromDay4_KG as AccumulateECMFromDay4_KG_t1
+		, LEAD(AccumulateECMFromDay4_KG, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateECMFromDay4_KG, 1) OVER(partition by FarmCowID order by Cur_Date) as AccumulateECMFromDay4_KG_t2
+		, LEAD(AccumulateECMFromDay4_KG, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateECMFromDay4_KG, 2) OVER(partition by FarmCowID order by Cur_Date) as AccumulateECMFromDay4_KG_t3
+		, LEAD(AccumulateECMFromDay4_KG, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateECMFromDay4_KG, 3) OVER(partition by FarmCowID order by Cur_Date) as AccumulateECMFromDay4_KG_t4
+		, LEAD(AccumulateECMFromDay4_KG, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateECMFromDay4_KG, 4) OVER(partition by FarmCowID order by Cur_Date) as AccumulateECMFromDay4_KG_t5
+		, LEAD(AccumulateECMFromDay4_KG, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateECMFromDay4_KG, 5) OVER(partition by FarmCowID order by Cur_Date) as AccumulateECMFromDay4_KG_t6
+		, LEAD(AccumulateECMFromDay4_KG, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(AccumulateECMFromDay4_KG, 6) OVER(partition by FarmCowID order by Cur_Date) as AccumulateECMFromDay4_KG_t7
 		, DailyConductivity
-		, LEAD(DailyConductivity, 1) OVER(partition by	CowID order by Cur_Date) as DailyConductivity_t1
-		, LEAD(DailyConductivity, 2) OVER(partition by	CowID order by Cur_Date) as DailyConductivity_t2
-		, LEAD(DailyConductivity, 3) OVER(partition by	CowID order by Cur_Date) as DailyConductivity_t3
-		, LEAD(DailyConductivity, 4) OVER(partition by	CowID order by Cur_Date) as DailyConductivity_t4
-		, LEAD(DailyConductivity, 5) OVER(partition by	CowID order by Cur_Date) as DailyConductivity_t5
-		, LEAD(DailyConductivity, 6) OVER(partition by	CowID order by Cur_Date) as DailyConductivity_t6
-		, LEAD(DailyConductivity, 7) OVER(partition by	CowID order by Cur_Date) as DailyConductivity_t7
+		, LEAD(DailyConductivity, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyConductivity as DailyConductivity_t1
+		, LEAD(DailyConductivity, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyConductivity, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyConductivity_t2
+		, LEAD(DailyConductivity, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyConductivity, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyConductivity_t3
+		, LEAD(DailyConductivity, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyConductivity, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyConductivity_t4
+		, LEAD(DailyConductivity, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyConductivity, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyConductivity_t5
+		, LEAD(DailyConductivity, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyConductivity, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyConductivity_t6
+		, LEAD(DailyConductivity, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyConductivity, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyConductivity_t7
 		, TenDaysAvgConductivity
-		, LEAD(TenDaysAvgConductivity, 1) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgConductivity_t1
-		, LEAD(TenDaysAvgConductivity, 2) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgConductivity_t2
-		, LEAD(TenDaysAvgConductivity, 3) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgConductivity_t3
-		, LEAD(TenDaysAvgConductivity, 4) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgConductivity_t4
-		, LEAD(TenDaysAvgConductivity, 5) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgConductivity_t5
-		, LEAD(TenDaysAvgConductivity, 6) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgConductivity_t6
-		, LEAD(TenDaysAvgConductivity, 7) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgConductivity_t7
+		, LEAD(TenDaysAvgConductivity, 1) OVER(partition by FarmCowID order by Cur_Date) - TenDaysAvgConductivity as TenDaysAvgConductivity_t1
+		, LEAD(TenDaysAvgConductivity, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgConductivity, 1) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgConductivity_t2
+		, LEAD(TenDaysAvgConductivity, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgConductivity, 2) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgConductivity_t3
+		, LEAD(TenDaysAvgConductivity, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgConductivity, 3) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgConductivity_t4
+		, LEAD(TenDaysAvgConductivity, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgConductivity, 4) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgConductivity_t5
+		, LEAD(TenDaysAvgConductivity, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgConductivity, 5) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgConductivity_t6
+		, LEAD(TenDaysAvgConductivity, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgConductivity, 6) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgConductivity_t7
 		, DailyProdRate
-		, LEAD(DailyProdRate, 1) OVER(partition by	CowID order by Cur_Date) as DailyProdRate_t1
-		, LEAD(DailyProdRate, 2) OVER(partition by	CowID order by Cur_Date) as DailyProdRate_t2
-		, LEAD(DailyProdRate, 3) OVER(partition by	CowID order by Cur_Date) as DailyProdRate_t3
-		, LEAD(DailyProdRate, 4) OVER(partition by	CowID order by Cur_Date) as DailyProdRate_t4
-		, LEAD(DailyProdRate, 5) OVER(partition by	CowID order by Cur_Date) as DailyProdRate_t5
-		, LEAD(DailyProdRate, 6) OVER(partition by	CowID order by Cur_Date) as DailyProdRate_t6
-		, LEAD(DailyProdRate, 7) OVER(partition by	CowID order by Cur_Date) as DailyProdRate_t7
+		, LEAD(DailyProdRate, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyProdRate as DailyProdRate_t1
+		, LEAD(DailyProdRate, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProdRate, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyProdRate_t2
+		, LEAD(DailyProdRate, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProdRate, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyProdRate_t3
+		, LEAD(DailyProdRate, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProdRate, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyProdRate_t4
+		, LEAD(DailyProdRate, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProdRate, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyProdRate_t5
+		, LEAD(DailyProdRate, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProdRate, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyProdRate_t6
+		, LEAD(DailyProdRate, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyProdRate, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyProdRate_t7
 		, DailyMilkingTime
-		, LEAD(DailyMilkingTime, 1) OVER(partition by	CowID order by Cur_Date) as DailyMilkingTime_t1
-		, LEAD(DailyMilkingTime, 2) OVER(partition by	CowID order by Cur_Date) as DailyMilkingTime_t2
-		, LEAD(DailyMilkingTime, 3) OVER(partition by	CowID order by Cur_Date) as DailyMilkingTime_t3
-		, LEAD(DailyMilkingTime, 4) OVER(partition by	CowID order by Cur_Date) as DailyMilkingTime_t4
-		, LEAD(DailyMilkingTime, 5) OVER(partition by	CowID order by Cur_Date) as DailyMilkingTime_t5
-		, LEAD(DailyMilkingTime, 6) OVER(partition by	CowID order by Cur_Date) as DailyMilkingTime_t6
-		, LEAD(DailyMilkingTime, 7) OVER(partition by	CowID order by Cur_Date) as DailyMilkingTime_t7
+		, LEAD(DailyMilkingTime, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyMilkingTime as DailyMilkingTime_t1
+		, LEAD(DailyMilkingTime, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyMilkingTime, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyMilkingTime_t2
+		, LEAD(DailyMilkingTime, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyMilkingTime, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyMilkingTime_t3
+		, LEAD(DailyMilkingTime, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyMilkingTime, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyMilkingTime_t4
+		, LEAD(DailyMilkingTime, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyMilkingTime, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyMilkingTime_t5
+		, LEAD(DailyMilkingTime, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyMilkingTime, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyMilkingTime_t6
+		, LEAD(DailyMilkingTime, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyMilkingTime, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyMilkingTime_t7
 		, DailyActivity
-		, LEAD(DailyActivity, 1) OVER(partition by	CowID order by Cur_Date) as DailyActivity_t1
-		, LEAD(DailyActivity, 2) OVER(partition by	CowID order by Cur_Date) as DailyActivity_t2
-		, LEAD(DailyActivity, 3) OVER(partition by	CowID order by Cur_Date) as DailyActivity_t3
-		, LEAD(DailyActivity, 4) OVER(partition by	CowID order by Cur_Date) as DailyActivity_t4
-		, LEAD(DailyActivity, 5) OVER(partition by	CowID order by Cur_Date) as DailyActivity_t5
-		, LEAD(DailyActivity, 6) OVER(partition by	CowID order by Cur_Date) as DailyActivity_t6
-		, LEAD(DailyActivity, 7) OVER(partition by	CowID order by Cur_Date) as DailyActivity_t7
+		, LEAD(DailyActivity, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyActivity as DailyActivity_t1
+		, LEAD(DailyActivity, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyActivity, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyActivity_t2
+		, LEAD(DailyActivity, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyActivity, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyActivity_t3
+		, LEAD(DailyActivity, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyActivity, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyActivity_t4
+		, LEAD(DailyActivity, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyActivity, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyActivity_t5
+		, LEAD(DailyActivity, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyActivity, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyActivity_t6
+		, LEAD(DailyActivity, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyActivity, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyActivity_t7
 		, DailyHeatIndicator
-		, LEAD(DailyHeatIndicator, 1) OVER(partition by	CowID order by Cur_Date) as DailyHeatIndicator_t1
-		, LEAD(DailyHeatIndicator, 2) OVER(partition by	CowID order by Cur_Date) as DailyHeatIndicator_t2
-		, LEAD(DailyHeatIndicator, 3) OVER(partition by	CowID order by Cur_Date) as DailyHeatIndicator_t3
-		, LEAD(DailyHeatIndicator, 4) OVER(partition by	CowID order by Cur_Date) as DailyHeatIndicator_t4
-		, LEAD(DailyHeatIndicator, 5) OVER(partition by	CowID order by Cur_Date) as DailyHeatIndicator_t5
-		, LEAD(DailyHeatIndicator, 6) OVER(partition by	CowID order by Cur_Date) as DailyHeatIndicator_t6
-		, LEAD(DailyHeatIndicator, 7) OVER(partition by	CowID order by Cur_Date) as DailyHeatIndicator_t7
+		, LEAD(DailyHeatIndicator, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyHeatIndicator as DailyHeatIndicator_t1
+		, LEAD(DailyHeatIndicator, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyHeatIndicator, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyHeatIndicator_t2
+		, LEAD(DailyHeatIndicator, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyHeatIndicator, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyHeatIndicator_t3
+		, LEAD(DailyHeatIndicator, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyHeatIndicator, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyHeatIndicator_t4
+		, LEAD(DailyHeatIndicator, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyHeatIndicator, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyHeatIndicator_t5
+		, LEAD(DailyHeatIndicator, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyHeatIndicator, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyHeatIndicator_t6
+		, LEAD(DailyHeatIndicator, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyHeatIndicator, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyHeatIndicator_t7
 		, DailyRestRatio
-		, LEAD(DailyRestRatio, 1) OVER(partition by	CowID order by Cur_Date) as DailyRestRatio_t1
-		, LEAD(DailyRestRatio, 2) OVER(partition by	CowID order by Cur_Date) as DailyRestRatio_t2
-		, LEAD(DailyRestRatio, 3) OVER(partition by	CowID order by Cur_Date) as DailyRestRatio_t3
-		, LEAD(DailyRestRatio, 4) OVER(partition by	CowID order by Cur_Date) as DailyRestRatio_t4
-		, LEAD(DailyRestRatio, 5) OVER(partition by	CowID order by Cur_Date) as DailyRestRatio_t5
-		, LEAD(DailyRestRatio, 6) OVER(partition by	CowID order by Cur_Date) as DailyRestRatio_t6
-		, LEAD(DailyRestRatio, 7) OVER(partition by	CowID order by Cur_Date) as DailyRestRatio_t7
+		, LEAD(DailyRestRatio, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyRestRatio as DailyRestRatio_t1
+		, LEAD(DailyRestRatio, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRatio, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRatio_t2
+		, LEAD(DailyRestRatio, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRatio, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRatio_t3
+		, LEAD(DailyRestRatio, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRatio, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRatio_t4
+		, LEAD(DailyRestRatio, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRatio, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRatio_t5
+		, LEAD(DailyRestRatio, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRatio, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRatio_t6
+		, LEAD(DailyRestRatio, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRatio, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRatio_t7
 		, DailyRestRestlessness
-		, LEAD(DailyRestRestlessness, 1) OVER(partition by	CowID order by Cur_Date) as DailyRestRestlessness_t1
-		, LEAD(DailyRestRestlessness, 2) OVER(partition by	CowID order by Cur_Date) as DailyRestRestlessness_t2
-		, LEAD(DailyRestRestlessness, 3) OVER(partition by	CowID order by Cur_Date) as DailyRestRestlessness_t3
-		, LEAD(DailyRestRestlessness, 4) OVER(partition by	CowID order by Cur_Date) as DailyRestRestlessness_t4
-		, LEAD(DailyRestRestlessness, 5) OVER(partition by	CowID order by Cur_Date) as DailyRestRestlessness_t5
-		, LEAD(DailyRestRestlessness, 6) OVER(partition by	CowID order by Cur_Date) as DailyRestRestlessness_t6
-		, LEAD(DailyRestRestlessness, 7) OVER(partition by	CowID order by Cur_Date) as DailyRestRestlessness_t7
+		, LEAD(DailyRestRestlessness, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyRestRestlessness as DailyRestRestlessness_t1
+		, LEAD(DailyRestRestlessness, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRestlessness, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRestlessness_t2
+		, LEAD(DailyRestRestlessness, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRestlessness, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRestlessness_t3
+		, LEAD(DailyRestRestlessness, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRestlessness, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRestlessness_t4
+		, LEAD(DailyRestRestlessness, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRestlessness, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRestlessness_t5
+		, LEAD(DailyRestRestlessness, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRestlessness, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRestlessness_t6
+		, LEAD(DailyRestRestlessness, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestRestlessness, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyRestRestlessness_t7
 		, DailyRestPerBout
-		, LEAD(DailyRestPerBout, 1) OVER(partition by	CowID order by Cur_Date) as DailyRestPerBout_t1
-		, LEAD(DailyRestPerBout, 2) OVER(partition by	CowID order by Cur_Date) as DailyRestPerBout_t2
-		, LEAD(DailyRestPerBout, 3) OVER(partition by	CowID order by Cur_Date) as DailyRestPerBout_t3
-		, LEAD(DailyRestPerBout, 4) OVER(partition by	CowID order by Cur_Date) as DailyRestPerBout_t4
-		, LEAD(DailyRestPerBout, 5) OVER(partition by	CowID order by Cur_Date) as DailyRestPerBout_t5
-		, LEAD(DailyRestPerBout, 6) OVER(partition by	CowID order by Cur_Date) as DailyRestPerBout_t6
-		, LEAD(DailyRestPerBout, 7) OVER(partition by	CowID order by Cur_Date) as DailyRestPerBout_t7
+		, LEAD(DailyRestPerBout, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyRestPerBout as DailyRestPerBout_t1
+		, LEAD(DailyRestPerBout, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestPerBout, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyRestPerBout_t2
+		, LEAD(DailyRestPerBout, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestPerBout, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyRestPerBout_t3
+		, LEAD(DailyRestPerBout, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestPerBout, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyRestPerBout_t4
+		, LEAD(DailyRestPerBout, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestPerBout, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyRestPerBout_t5
+		, LEAD(DailyRestPerBout, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestPerBout, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyRestPerBout_t6
+		, LEAD(DailyRestPerBout, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestPerBout, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyRestPerBout_t7
 		, DailyRestTime
-		, LEAD(DailyRestTime, 1) OVER(partition by	CowID order by Cur_Date) as DailyRestTime_t1
-		, LEAD(DailyRestTime, 2) OVER(partition by	CowID order by Cur_Date) as DailyRestTime_t2
-		, LEAD(DailyRestTime, 3) OVER(partition by	CowID order by Cur_Date) as DailyRestTime_t3
-		, LEAD(DailyRestTime, 4) OVER(partition by	CowID order by Cur_Date) as DailyRestTime_t4
-		, LEAD(DailyRestTime, 5) OVER(partition by	CowID order by Cur_Date) as DailyRestTime_t5
-		, LEAD(DailyRestTime, 6) OVER(partition by	CowID order by Cur_Date) as DailyRestTime_t6
-		, LEAD(DailyRestTime, 7) OVER(partition by	CowID order by Cur_Date) as DailyRestTime_t7
+		, LEAD(DailyRestTime, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyRestTime as DailyRestTime_t1
+		, LEAD(DailyRestTime, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestTime, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyRestTime_t2
+		, LEAD(DailyRestTime, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestTime, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyRestTime_t3
+		, LEAD(DailyRestTime, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestTime, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyRestTime_t4
+		, LEAD(DailyRestTime, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestTime, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyRestTime_t5
+		, LEAD(DailyRestTime, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestTime, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyRestTime_t6
+		, LEAD(DailyRestTime, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestTime, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyRestTime_t7
 		, DailyRestBout
-		, LEAD(DailyRestBout, 1) OVER(partition by	CowID order by Cur_Date) as DailyRestBout_t1
-		, LEAD(DailyRestBout, 2) OVER(partition by	CowID order by Cur_Date) as DailyRestBout_t2
-		, LEAD(DailyRestBout, 3) OVER(partition by	CowID order by Cur_Date) as DailyRestBout_t3
-		, LEAD(DailyRestBout, 4) OVER(partition by	CowID order by Cur_Date) as DailyRestBout_t4
-		, LEAD(DailyRestBout, 5) OVER(partition by	CowID order by Cur_Date) as DailyRestBout_t5
-		, LEAD(DailyRestBout, 6) OVER(partition by	CowID order by Cur_Date) as DailyRestBout_t6
-		, LEAD(DailyRestBout, 7) OVER(partition by	CowID order by Cur_Date) as DailyRestBout_t7
+		, LEAD(DailyRestBout, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyRestBout as DailyRestBout_t1
+		, LEAD(DailyRestBout, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestBout, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyRestBout_t2
+		, LEAD(DailyRestBout, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestBout, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyRestBout_t3
+		, LEAD(DailyRestBout, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestBout, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyRestBout_t4
+		, LEAD(DailyRestBout, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestBout, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyRestBout_t5
+		, LEAD(DailyRestBout, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestBout, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyRestBout_t6
+		, LEAD(DailyRestBout, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyRestBout, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyRestBout_t7
 		, DailyFPR_P
-		, LEAD(DailyFPR_P, 1) OVER(partition by	CowID order by Cur_Date) as DailyFPR_P_t1
-		, LEAD(DailyFPR_P, 2) OVER(partition by	CowID order by Cur_Date) as DailyFPR_P_t2
-		, LEAD(DailyFPR_P, 3) OVER(partition by	CowID order by Cur_Date) as DailyFPR_P_t3
-		, LEAD(DailyFPR_P, 4) OVER(partition by	CowID order by Cur_Date) as DailyFPR_P_t4
-		, LEAD(DailyFPR_P, 5) OVER(partition by	CowID order by Cur_Date) as DailyFPR_P_t5
-		, LEAD(DailyFPR_P, 6) OVER(partition by	CowID order by Cur_Date) as DailyFPR_P_t6
-		, LEAD(DailyFPR_P, 7) OVER(partition by	CowID order by Cur_Date) as DailyFPR_P_t7
+		, LEAD(DailyFPR_P, 1) OVER(partition by FarmCowID order by Cur_Date) - DailyFPR_P as DailyFPR_P_t1
+		, LEAD(DailyFPR_P, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFPR_P, 1) OVER(partition by FarmCowID order by Cur_Date) as DailyFPR_P_t2
+		, LEAD(DailyFPR_P, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFPR_P, 2) OVER(partition by FarmCowID order by Cur_Date) as DailyFPR_P_t3
+		, LEAD(DailyFPR_P, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFPR_P, 3) OVER(partition by FarmCowID order by Cur_Date) as DailyFPR_P_t4
+		, LEAD(DailyFPR_P, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFPR_P, 4) OVER(partition by FarmCowID order by Cur_Date) as DailyFPR_P_t5
+		, LEAD(DailyFPR_P, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFPR_P, 5) OVER(partition by FarmCowID order by Cur_Date) as DailyFPR_P_t6
+		, LEAD(DailyFPR_P, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(DailyFPR_P, 6) OVER(partition by FarmCowID order by Cur_Date) as DailyFPR_P_t7
 		, TenDaysAvgFPR_P
-		, LEAD(TenDaysAvgFPR_P, 1) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFPR_P_t1
-		, LEAD(TenDaysAvgFPR_P, 2) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFPR_P_t2
-		, LEAD(TenDaysAvgFPR_P, 3) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFPR_P_t3
-		, LEAD(TenDaysAvgFPR_P, 4) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFPR_P_t4
-		, LEAD(TenDaysAvgFPR_P, 5) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFPR_P_t5
-		, LEAD(TenDaysAvgFPR_P, 6) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFPR_P_t6
-		, LEAD(TenDaysAvgFPR_P, 7) OVER(partition by	CowID order by Cur_Date) as TenDaysAvgFPR_P_t7
+		, LEAD(TenDaysAvgFPR_P, 1) OVER(partition by FarmCowID order by Cur_Date) - TenDaysAvgFPR_P as TenDaysAvgFPR_P_t1
+		, LEAD(TenDaysAvgFPR_P, 2) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFPR_P, 1) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFPR_P_t2
+		, LEAD(TenDaysAvgFPR_P, 3) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFPR_P, 2) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFPR_P_t3
+		, LEAD(TenDaysAvgFPR_P, 4) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFPR_P, 3) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFPR_P_t4
+		, LEAD(TenDaysAvgFPR_P, 5) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFPR_P, 4) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFPR_P_t5
+		, LEAD(TenDaysAvgFPR_P, 6) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFPR_P, 5) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFPR_P_t6
+		, LEAD(TenDaysAvgFPR_P, 7) OVER(partition by FarmCowID order by Cur_Date) - LEAD(TenDaysAvgFPR_P, 6) OVER(partition by FarmCowID order by Cur_Date) as TenDaysAvgFPR_P_t7
+
 into cow_data_t7	
 from cow_data
-order by CowID, CalvingDate, Cur_Date
+order by FarmCowID, CalvingDate, Cur_Date
 
 GO
 
@@ -412,46 +416,90 @@ GO
 -- Table of cows and its calving dates
 drop table if exists cow_calving_date
 
-select distinct CowID, CalvingDate
+--select distinct FarmCowID, CalvingDate
+--into cow_calving_date
+--from cow_data
+--where CalvingDate is not NULL
+--and CalvingDate >= (select min(Cur_Date) from cow_data)
+
+select distinct FarmCowID, CalvingDate
 into cow_calving_date
 from cow_data
 where CalvingDate is not NULL
-and CalvingDate >= (select min(Cur_Date) from cow_data)
+and Cur_Date = DATEADD(day, 1, CalvingDate)
+order by FarmCowID,CalvingDate
 
-
+--find cows which had disease in the first month - calc LAST for FF
 drop table if exists cur_disease_t7_t30
-select distinct ccd.CowID
+select distinct ccd.FarmCowID
 		,cd.CalvingDate
-		,CASE WHEN (sum(cd.CurrentMET) > 0) THEN (1) ELSE (0) END as CurMet_t7_t30
-		,CASE WHEN (sum(cd.CurrentKET) > 0) THEN (1) ELSE (0) END as CurKET_t7_t30
-		,CASE WHEN (sum(cd.CurrentMF) > 0) THEN (1) ELSE (0) END as CurMF_t7_t30
-		,CASE WHEN (sum(cd.CurrentPRO) > 0) THEN (1) ELSE (0) END as CurPRO_t7_t30
-		,CASE WHEN (sum(cd.CurrentLDA) > 0) THEN (1) ELSE (0) END as CurLDA_t7_t30
-		,CASE WHEN (sum(cd.CurrentMAST) > 0) THEN (1) ELSE (0) END as CurMAST_t7_t30
-		,CASE WHEN (sum(cd.CurrentEdma) > 0) THEN (1) ELSE (0) END as CurEdma_t7_t30
-		,CASE WHEN (sum(cd.CurrentLAME) > 0) THEN (1) ELSE (0) END as CurLAME_t7_t30
+		,CASE WHEN (sum(cd.CurrentMET) > 0) THEN (1) ELSE (0) END as CurMet_t1_t30
+		,CASE WHEN (sum(cd.CurrentKET) > 0) THEN (1) ELSE (0) END as CurKET_t1_t30
+		,CASE WHEN (sum(cd.CurrentMF) > 0) THEN (1) ELSE (0) END as CurMF_t1_t30
+		,CASE WHEN (sum(cd.CurrentPRO) > 0) THEN (1) ELSE (0) END as CurPRO_t1_t30
+		,CASE WHEN (sum(cd.CurrentLDA) > 0) THEN (1) ELSE (0) END as CurLDA_t1_t30
+		,CASE WHEN (sum(cd.CurrentMAST) > 0) THEN (1) ELSE (0) END as CurMAST_t1_t30
+		,CASE WHEN (sum(cd.CurrentEdma) > 0) THEN (1) ELSE (0) END as CurEdma_t1_t30
+		,CASE WHEN (sum(cd.CurrentLAME) > 0) THEN (1) ELSE (0) END as CurLAME_t1_t30
 into cur_disease_t7_t30
 from cow_calving_date ccd
-inner join cow_data cd
-	on ccd.CowID = cd.CowID	and ccd.CalvingDate = cd.CalvingDate
-where cd.Cur_Date between DATEADD(day, 7, ccd.CalvingDate ) and DATEADD(MONTH, 1, ccd.CalvingDate )
-group by ccd.CowID, cd.CalvingDate
-ORDER BY ccd.CowID, cd.CalvingDate
+left outer join cow_data cd
+	on ccd.FarmCowID = cd.FarmCowID	and ccd.CalvingDate = DATEADD(day, -1, cd.Cur_Date)
+where cd.Cur_Date between ccd.CalvingDate and DATEADD(DAY, 30, ccd.CalvingDate )
+group by ccd.FarmCowID, cd.CalvingDate
+ORDER BY ccd.FarmCowID, cd.CalvingDate
 
-drop table if exists cur_RP_t1_t7
-select distinct ccd.CowID
+--find cows which had disease in the first 7 days - enter to FF
+drop table if exists cur_disease_t1_t7
+select distinct ccd.FarmCowID
 		,cd.CalvingDate
+		--,CASE WHEN (sum(cd.CurrentMET) > 0) THEN (1) ELSE (0) END as CurMet_t1_t7
+		,CASE WHEN (sum(cd.CurrentKET) > 0) THEN (1) ELSE (0) END as CurKET_t1_t7
+		,CASE WHEN (sum(cd.CurrentMF) > 0) THEN (1) ELSE (0) END as CurMF_t1_t7
+		,CASE WHEN (sum(cd.CurrentPRO) > 0) THEN (1) ELSE (0) END as CurPRO_t1_t7
+		,CASE WHEN (sum(cd.CurrentLDA) > 0) THEN (1) ELSE (0) END as CurLDA_t1_t7
+		,CASE WHEN (sum(cd.CurrentMAST) > 0) THEN (1) ELSE (0) END as CurMAST_t1_t7
+		,CASE WHEN (sum(cd.CurrentEdma) > 0) THEN (1) ELSE (0) END as CurEdma_t1_t7
+		,CASE WHEN (sum(cd.CurrentLAME) > 0) THEN (1) ELSE (0) END as CurLAME_t1_t7
 		,CASE WHEN (sum(cd.CurrentRP) > 0) THEN (1) ELSE (0) END as CurRP_t1_t7
-into cur_RP_t1_t7
+into cur_disease_t1_t7
 from cow_calving_date ccd
-inner join cow_data cd
-	on ccd.CowID = cd.CowID	and ccd.CalvingDate = cd.CalvingDate
-where cd.Cur_Date between DATEADD(day, 0, ccd.CalvingDate ) and DATEADD(day, 7, ccd.CalvingDate )
-group by ccd.CowID, cd.CalvingDate
-ORDER BY ccd.CowID, cd.CalvingDate
+left outer join cow_data cd
+	on ccd.FarmCowID = cd.FarmCowID	and ccd.CalvingDate = DATEADD(day, -1, cd.Cur_Date)
+where cd.Cur_Date between DATEADD(DAY, 0, ccd.CalvingDate ) and DATEADD(DAY, 7, ccd.CalvingDate )
+group by ccd.FarmCowID, cd.CalvingDate
+ORDER BY ccd.FarmCowID, cd.CalvingDate
 
 
--------------------------------------------------------------------------------------------------------------
+-- find cows had Metritis from day 7 till day 30 - OUTCOME
+drop table if exists cur_met_t7_t30
+
+select distinct ccd.FarmCowID
+		,cd.CalvingDate
+		,CASE WHEN (sum(cd.CurrentMET) > 0) THEN (1) ELSE (0) END as CurMet_t7_t30
+into cur_met_t7_t30
+from cow_calving_date ccd
+left outer join cow_data cd
+	on ccd.FarmCowID = cd.FarmCowID	and ccd.CalvingDate = cd.CalvingDate
+where cd.Cur_Date between DATEADD(day, 7, cd.CalvingDate ) and DATEADD(DAY, 30, cd.CalvingDate )
+group by ccd.FarmCowID, cd.CalvingDate
+ORDER BY ccd.FarmCowID, cd.CalvingDate
+
+-- find cows relevant data before current calving
+drop table if exists pre_calving_data
+
+select   ccd.FarmCowID
+		, ccd.CalvingDate
+		, cd.DIM
+		, cd.CurrentDryDays
+		, cd.Fertility_Num
+into pre_calving_data
+from [dbo].[cow_calving_date] ccd
+left outer join cow_data cd
+	on ccd.FarmCowID = cd.FarmCowID and cd.Cur_Date = DATEADD(DAY, -1 , ccd.CalvingDate ) --take data 1 days before calving
+order by   ccd.FarmCowID, ccd.CalvingDate
+
+
 
 -------------------------------------------------------------------------------------------------------------
 -- Creates the flat file by collecting all the rows from day after the calving 
@@ -461,8 +509,9 @@ drop table if exists flat_file
 
 select  [FarmCode]
 		  ,[DateMonth]
-		  ,[DIM]
+		  ,pcd.DIM
 		  ,cd7.[CowID]
+		  ,cd7.FarmCowID
 		  ,[BirthDate]
 		  ,cd7.[CalvingDate]
 		  ,[Cur_Date]
@@ -475,9 +524,9 @@ select  [FarmCode]
 		  ,[Heifer_Extend_Status]
 		  ,[LactationNumber]
 		  ,[IsPreviousLactation]
-		  ,[CurrentDryDays]
+		  ,pcd.CurrentDryDays
 		  ,[Is_Ready_to_breed]
-		  ,[Fertility_Num]
+		  ,pcd.Fertility_Num
 		  ,[WeightCalv]
 		  --,[CurrentRP]
 		  --,[CurrentMET]
@@ -489,7 +538,8 @@ select  [FarmCode]
 		  --,[CurrentEdma]
 		  --,[CurrentLAME]
 		  ,[Parity123]
-		  ,[Age]
+		  --,[Age]
+		  ,[Age_calc]
 		  ,[Twin]
 		  ,[Still]
 		  ,[PrevDryDays]
@@ -743,73 +793,48 @@ select  [FarmCode]
 		  ,[TenDaysAvgFPR_P_t5]
 		  ,[TenDaysAvgFPR_P_t6]
 		  ,[TenDaysAvgFPR_P_t7]
-		  ,DailyYield_KG_t7 - DailyYield_KG						as DailyYield_KG_ratio
-		  ,TenDaysAvgYield_t7 - TenDaysAvgYield					as TenDaysAvgYield_ratio
-		  ,AccumulateYieldFromDay4_t7 - AccumulateYieldFromDay4 as AccumulateYieldFromDay4_ratio
-		  ,DailyFat_P_t7 - DailyFat_P							as DailyFat_P_ratio
-		  ,TenDaysAvgFat_P_t7 - TenDaysAvgFat_P					as TenDaysAvgFat_P_ratio
-		  ,DailyFat_KG_t7 - DailyFat_KG							as DailyFat_KG_ratio
-		  ,TenDaysAvgFat_KG_t7 - TenDaysAvgFat_KG				as TenDaysAvgFat_KG_ratio
-		  ,AccumulateFatFromDay4_KG_t7 - AccumulateFatFromDay4_KG as AccumulateFatFromDay4_KG_ratio
-		  ,DailyProtein_P_t7 - DailyProtein_P					as DailyProtein_P_ratio
-		  ,TenDaysAvgProtein_p_t7 - TenDaysAvgProtein_p			as TenDaysAvgProtein_p_ratio
-		  ,DailyProtein_KG_t7 - DailyProtein_KG					as DailyProtein_KG_ratio
-		  ,TenDaysAvgProtein_KG_t7 - TenDaysAvgProtein_KG		as TenDaysAvgProtein_KG_ratio
-		  ,AccumulateProteinFromDay4_KG_t7 - AccumulateProteinFromDay4_KG as AccumulateProteinFromDay4_KG_ratio
-		  ,ECM_KG_t7 - ECM_KG									as ECM_KG_ratio
-		  ,TenDaysAvgECM_KG_t7 - TenDaysAvgECM_KG				as TenDaysAvgECM_KG_ratio
-		  ,AccumulateECMFromDay4_KG_t7 - AccumulateECMFromDay4_KG as AccumulateECMFromDay4_KG_ratio
-		  ,DailyConductivity_t7 - DailyConductivity				as DailyConductivity_ratio
-		  ,TenDaysAvgConductivity_t7 - TenDaysAvgConductivity	as TenDaysAvgConductivity_ratio
-		  ,DailyProdRate_t7 - DailyProdRate						as DailyProdRate_ratio
-		  ,DailyMilkingTime_t7 - DailyMilkingTime				as DailyMilkingTime_ratio
-		  ,DailyActivity_t7 - DailyActivity						as DailyActivity_ratio
-		  ,DailyHeatIndicator_t7 - DailyHeatIndicator			as DailyHeatIndicator_ratio
-		  ,DailyRestRatio_t7 - DailyRestRatio					as DailyRestRatio_ratio
-		  ,DailyRestRestlessness_t7 - DailyRestRestlessness		as DailyRestRestlessness_ratio
-		  ,DailyRestPerBout_t7 - DailyRestPerBout				as DailyRestPerBout_ratio
-		  ,DailyRestTime_t7 - DailyRestTime						as DailyRestTime_ratio
-		  ,DailyRestBout_t7 - DailyRestBout						as DailyRestBout_ratio
-		  ,DailyFPR_P_t7 - DailyFPR_P							as DailyFPR_P_ratio
-		  ,TenDaysAvgFPR_P_t7 - TenDaysAvgFPR_P					as TenDaysAvgFPR_P_ratio
 		  ,CASE WHEN (Group_ID <> Group_ID_t7) THEN (1) ELSE (0) END as GroupChanged
-		,CurEdma_t7_t30
-		,CurKET_t7_t30
-		,CurLAME_t7_t30
-		,CurLDA_t7_t30
-		,CurMAST_t7_t30
-		,CurMF_t7_t30
-		,CurPRO_t7_t30
+		,CurEdma_t1_t7
+		,CurKET_t1_t7
+		,CurLAME_t1_t7
+		,CurLDA_t1_t7
+		,CurMAST_t1_t7
+		,CurMF_t1_t7
+		,CurPRO_t1_t7
 		,CurRP_t1_t7
-		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurEdma_t7_t30) OVER(partition by ccd1.CowID order by ccd1.CalvingDate)) END as LastEdma_t7_t30
-		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurKET_t7_t30) OVER(partition by ccd1.CowID order by ccd1.CalvingDate)) END as LastKET_t7_t30
-		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurLAME_t7_t30) OVER(partition by ccd1.CowID order by ccd1.CalvingDate)) END as LastLAME_t7_t30
-		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurLDA_t7_t30) OVER(partition by ccd1.CowID order by ccd1.CalvingDate)) END as LastLDA_t7_t30
-		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurMAST_t7_t30) OVER(partition by ccd1.CowID order by ccd1.CalvingDate)) END as LastMAST_t7_t30
-		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurMF_t7_t30) OVER(partition by ccd1.CowID order by ccd1.CalvingDate)) END as LastMF_t7_t30
-		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurPRO_t7_t30) OVER(partition by ccd1.CowID order by ccd1.CalvingDate)) END as LastPRO_t7_t30
+		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurEdma_t1_t30) OVER(partition by ccd1.FarmCowID order by ccd1.CalvingDate)) END as LastEdma_t1_t30
+		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurKET_t1_t30) OVER(partition by ccd1.FarmCowID order by ccd1.CalvingDate)) END as LastKET_t1_t30
+		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurLAME_t1_t30) OVER(partition by ccd1.FarmCowID order by ccd1.CalvingDate)) END as LastLAME_t1_t30
+		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurLDA_t1_t30) OVER(partition by ccd1.FarmCowID order by ccd1.CalvingDate)) END as LastLDA_t1_t30
+		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurMAST_t1_t30) OVER(partition by ccd1.FarmCowID order by ccd1.CalvingDate)) END as LastMAST_t1_t30
+		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurMF_t1_t30) OVER(partition by ccd1.FarmCowID order by ccd1.CalvingDate)) END as LastMF_t1_t30
+		,CASE WHEN (LactationNumber = 1) THEN (0) ELSE (LAG(CurPRO_t1_t30) OVER(partition by ccd1.FarmCowID order by ccd1.CalvingDate)) END as LastPRO_t1_t30
 		,CurMet_t7_t30
 into flat_file
 from (select  ccd.*, count(*) as cnt
 		from cow_calving_date ccd
 		left outer join  cow_data_t7 cd7
-			on cd7.CowID = ccd.CowId and cd7.Cur_Date = DATEADD(day,1, ccd.CalvingDate )
-		group by ccd.CowId, ccd.CalvingDate
+			on cd7.FarmCowID = ccd.FarmCowID and cd7.Cur_Date = DATEADD(day,1, ccd.CalvingDate )
+		group by ccd.FarmCowID, ccd.CalvingDate
 		having count(*) = 1) ccd1
 inner join  cow_data_t7 cd7
-	on cd7.CowID = ccd1.CowId and cd7.Cur_Date = DATEADD(day,1, ccd1.CalvingDate )
+	on cd7.FarmCowID = ccd1.FarmCowID and cd7.Cur_Date = DATEADD(day,1, ccd1.CalvingDate )
 inner join cur_disease_t7_t30
-	on cur_disease_t7_t30.CowID = ccd1.CowID and cur_disease_t7_t30.CalvingDate = ccd1.CalvingDate
-inner join cur_RP_t1_t7
-	on cur_RP_t1_t7.CowID = ccd1.CowID and cur_RP_t1_t7.CalvingDate = ccd1.CalvingDate
-order by cd7.CowID
+	on cur_disease_t7_t30.FarmCowID = ccd1.FarmCowID and cur_disease_t7_t30.CalvingDate = ccd1.CalvingDate
+inner join cur_disease_t1_t7
+	on cur_disease_t1_t7.FarmCowID = ccd1.FarmCowID and cur_disease_t1_t7.CalvingDate = ccd1.CalvingDate
+inner join cur_met_t7_t30
+	on cur_met_t7_t30.FarmCowID = ccd1.FarmCowID and cur_met_t7_t30.CalvingDate = ccd1.CalvingDate
+inner join pre_calving_data pcd
+	on pcd.FarmCowID = ccd1.FarmCowID and pcd.CalvingDate = ccd1.CalvingDate
+order by cd7.FarmCowID
 
 --------------------------------------------------------------------------------------------------------------------
 --TEST DATE----
 --------------------------------------------------------------------------------------------------------------------
 -- Number of cows
 select count(*) as Cow_cnt
-from (select distinct CowID from cow_data_raw) a
+from (select distinct FarmCowID from cow_data_raw) a
 
 -- Calvings in the period of the data 
 select min(CalvingDate) as min_CalvingDate, min(Cur_Date) as min_Cur_Date
@@ -817,7 +842,7 @@ select min(CalvingDate) as min_CalvingDate, min(Cur_Date) as min_Cur_Date
 from cow_data
 
 select count(*) as calvings_cnt
-from (select distinct CowID, CalvingDate 
+from (select distinct FarmCowID, CalvingDate 
 		from cow_data 
 		where CalvingDate >= (select min(Cur_Date) as min_Cur_Date 
 								from cow_data)) a
@@ -827,8 +852,8 @@ from (
 	select  ccd.*, count(*) as duplicates_cnt
 			from cow_calving_date ccd
 			left outer join  cow_data_t7 cd7
-				on cd7.CowID = ccd.CowId and cd7.Cur_Date = DATEADD(day,1, ccd.CalvingDate )
-			group by ccd.CowId, ccd.CalvingDate
+				on cd7.FarmCowID = ccd.FarmCowID and cd7.Cur_Date = DATEADD(day,1, ccd.CalvingDate )
+			group by ccd.FarmCowID, ccd.CalvingDate
 			having count(*) > 1) a
 
 
@@ -836,11 +861,11 @@ select  count(*) as ff_rows_with_NULL
 from (select  ccd.*, count(*) as cnt
 		from cow_calving_date ccd
 		left outer join  cow_data_t7 cd7
-			on cd7.CowID = ccd.CowId and cd7.Cur_Date = DATEADD(day,1, ccd.CalvingDate )
-		group by ccd.CowId, ccd.CalvingDate
+			on cd7.FarmCowID = ccd.FarmCowID and cd7.Cur_Date = DATEADD(day,1, ccd.CalvingDate )
+		group by ccd.FarmCowID, ccd.CalvingDate
 		having count(*) = 1) ccd
 left outer join  cow_data_t7 cd7
-	on cd7.CowID = ccd.CowId and cd7.Cur_Date = DATEADD(day,1, ccd.CalvingDate )
+	on cd7.FarmCowID = ccd.FarmCowID and cd7.Cur_Date = DATEADD(day,1, ccd.CalvingDate )
 
 select count(*) as ff_rows_without_NULL, sum(CurMet_t7_t30) as countCurMet
 from flat_file
